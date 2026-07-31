@@ -1,16 +1,21 @@
 import axios from 'axios';
 
-// NEXT_PUBLIC_API_URL must be set in .env.local (dev) or Vercel env vars (prod).
-// Falls back to localhost only in local development when the var is missing.
-const baseURL = process.env.NEXT_PUBLIC_API_URL;
+// NEXT_PUBLIC_API_URL should be set to your backend base URL (no trailing slash).
+// Examples:
+//   Local:      http://localhost:5000/api
+//   Production: https://hospital-backend-gold.vercel.app/api
+//
+// If the variable is set WITHOUT the /api suffix, we append it automatically
+// so the app works regardless of how the env var is configured on Vercel.
+const rawURL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5000';
+const baseURL = rawURL.endsWith('/api') ? rawURL : `${rawURL.replace(/\/$/, '')}/api`;
 
-if (!baseURL && typeof window === 'undefined') {
-  // Server-side build warning — won't crash the build but flags the misconfiguration.
-  console.warn('[axios] NEXT_PUBLIC_API_URL is not set. API calls will fail in production.');
+if (!process.env.NEXT_PUBLIC_API_URL && typeof window === 'undefined') {
+  console.warn('[axios] NEXT_PUBLIC_API_URL is not set — falling back to localhost. Set this in Vercel environment variables.');
 }
 
 const axiosInstance = axios.create({
-  baseURL: baseURL ?? 'http://localhost:5000/api',
+  baseURL,
   headers: {
     'Content-Type': 'application/json',
   },
