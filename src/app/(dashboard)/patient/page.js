@@ -9,19 +9,24 @@ import { useLabTest } from '@/lib/hooks/useLabTest';
 import { useBilling } from '@/lib/hooks/useBilling';
 import { Card, StatCard } from '@/components/common/Card';
 import { Button } from '@/components/common/Button';
+import { PageLoader } from '@/components/common/Loader';
 import { Calendar, FileText, FlaskConical, CreditCard, Plus } from 'lucide-react';
 import { getStatusVariant, formatDate, formatCurrency } from '@/lib/utils/formatter';
 import { Badge } from '@/components/ui/badge';
 
 export default function PatientDashboard() {
   const { user } = useAuth();
-  const { appointments } = useAppointment();
-  const { prescriptions } = usePrescription();
-  const { labTests } = useLabTest();
-  const { bills } = useBilling();
+  const { appointments, loading: loadingAppts } = useAppointment();
+  const { prescriptions, loading: loadingRx } = usePrescription();
+  const { labTests, loading: loadingLabs } = useLabTest();
+  const { bills, loading: loadingBills } = useBilling();
+
+  const isLoading = loadingAppts || loadingRx || loadingLabs || loadingBills;
 
   const upcomingAppts = appointments.filter((a) => a.status === 'Approved' || a.status === 'Pending');
   const unpaidBills = bills.filter((b) => b.status === 'Unpaid');
+
+  if (isLoading) return <PageLoader />;
 
   return (
     <div className="flex flex-col gap-8">
@@ -47,15 +52,12 @@ export default function PatientDashboard() {
         <StatCard label="Unpaid Invoices" value={unpaidBills.length} icon={CreditCard} color={unpaidBills.length > 0 ? 'bias-left' : 'accent'} />
       </div>
 
-      {/* Recent Appointments & Prescriptions Grid */}
+      {/* Recent Appointments & Prescriptions */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Appointments */}
         <Card padding={false}>
           <div className="p-5 border-b border-border flex justify-between items-center">
             <h2 className="text-h4 font-bold text-text-primary">Upcoming Appointments</h2>
-            <Link href="/patient/appointments" className="text-caption text-accent hover:underline font-semibold">
-              View All
-            </Link>
+            <Link href="/patient/appointments" className="text-caption text-accent hover:underline font-semibold">View All</Link>
           </div>
           <div className="divide-y divide-divider">
             {upcomingAppts.length === 0 ? (
@@ -74,13 +76,10 @@ export default function PatientDashboard() {
           </div>
         </Card>
 
-        {/* Recent Prescriptions */}
         <Card padding={false}>
           <div className="p-5 border-b border-border flex justify-between items-center">
             <h2 className="text-h4 font-bold text-text-primary">Active Prescriptions</h2>
-            <Link href="/patient/prescriptions" className="text-caption text-accent hover:underline font-semibold">
-              View All
-            </Link>
+            <Link href="/patient/prescriptions" className="text-caption text-accent hover:underline font-semibold">View All</Link>
           </div>
           <div className="divide-y divide-divider">
             {prescriptions.length === 0 ? (

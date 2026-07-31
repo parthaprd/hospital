@@ -5,13 +5,14 @@ import Link from 'next/link';
 import { useLabTest } from '@/lib/hooks/useLabTest';
 import { Card, StatCard } from '@/components/common/Card';
 import { Button } from '@/components/common/Button';
+import { PageLoader } from '@/components/common/Loader';
 import { FlaskConical, Clock, CheckCircle2 } from 'lucide-react';
 import { Table } from '@/components/common/Table';
 import { Badge } from '@/components/ui/badge';
 import { formatDate, getStatusVariant } from '@/lib/utils/formatter';
 
 export default function LabStaffDashboard() {
-  const { labTests } = useLabTest();
+  const { labTests, loading } = useLabTest();
 
   const pendingTests = labTests.filter((t) => t.status === 'Requested');
   const completedTests = labTests.filter((t) => t.status === 'Completed');
@@ -26,6 +27,8 @@ export default function LabStaffDashboard() {
       render: (val) => <Badge variant={getStatusVariant(val)}>{val}</Badge>,
     },
   ];
+
+  if (loading) return <PageLoader />;
 
   return (
     <div className="flex flex-col gap-8">
@@ -50,13 +53,11 @@ export default function LabStaffDashboard() {
         <StatCard label="Completed Diagnostic Panel" value={completedTests.length} icon={CheckCircle2} color="green-600" />
       </div>
 
-      {/* Test Queue Table */}
+      {/* Test Queue */}
       <Card padding={false}>
         <div className="p-5 border-b border-border flex justify-between items-center">
           <h2 className="text-h4 font-bold text-text-primary">Diagnostic Specimen Queue</h2>
-          <Link href="/lab-staff/tests" className="text-caption text-accent hover:underline font-semibold">
-            View All Tests
-          </Link>
+          <Link href="/lab-staff/tests" className="text-caption text-accent hover:underline font-semibold">View All Tests</Link>
         </div>
         <Table columns={columns} data={labTests} emptyMessage="No laboratory panel tests recorded." />
       </Card>

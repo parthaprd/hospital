@@ -8,17 +8,19 @@ import { useAppointment } from '@/lib/hooks/useAppointment';
 import { useBilling } from '@/lib/hooks/useBilling';
 import { Card, StatCard } from '@/components/common/Card';
 import { Button } from '@/components/common/Button';
+import { PageLoader } from '@/components/common/Loader';
 import { Users, Calendar, CreditCard, UserPlus, CalendarPlus, Search, Receipt } from 'lucide-react';
-import { formatDate, formatCurrency, getStatusVariant } from '@/lib/utils/formatter';
-import { Badge } from '@/components/ui/badge';
 
 export default function ReceptionistDashboard() {
   const { user } = useAuth();
-  const { patients } = usePatient();
-  const { appointments } = useAppointment();
-  const { bills } = useBilling();
+  const { patients, loading: loadingPatients } = usePatient();
+  const { appointments, loading: loadingAppts } = useAppointment();
+  const { bills, loading: loadingBills } = useBilling();
 
+  const isLoading = loadingPatients || loadingAppts || loadingBills;
   const unpaidBills = bills.filter((b) => b.status === 'Unpaid');
+
+  if (isLoading) return <PageLoader />;
 
   return (
     <div className="flex flex-col gap-8">

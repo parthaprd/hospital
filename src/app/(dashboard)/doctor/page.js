@@ -8,17 +8,21 @@ import { useLabTest } from '@/lib/hooks/useLabTest';
 import { usePrescription } from '@/lib/hooks/usePrescription';
 import { Card, StatCard } from '@/components/common/Card';
 import { Button } from '@/components/common/Button';
+import { PageLoader } from '@/components/common/Loader';
 import { Calendar, Users, FileText, FlaskConical, Plus } from 'lucide-react';
 import { formatDate, getStatusVariant } from '@/lib/utils/formatter';
 import { Badge } from '@/components/ui/badge';
 
 export default function DoctorDashboard() {
   const { user } = useAuth();
-  const { appointments, updateStatus } = useAppointment();
-  const { labTests } = useLabTest();
-  const { prescriptions } = usePrescription();
+  const { appointments, loading: loadingAppts, updateStatus } = useAppointment();
+  const { labTests, loading: loadingLabs } = useLabTest();
+  const { prescriptions, loading: loadingRx } = usePrescription();
 
+  const isLoading = loadingAppts || loadingLabs || loadingRx;
   const pendingAppts = appointments.filter((a) => a.status === 'Pending');
+
+  if (isLoading) return <PageLoader />;
 
   return (
     <div className="flex flex-col gap-8">
@@ -52,13 +56,11 @@ export default function DoctorDashboard() {
         <StatCard label="Active Patients" value={new Set(appointments.map((a) => a.patientId?._id || a.patientId)).size || 1} icon={Users} />
       </div>
 
-      {/* Pending Appointments Action List */}
+      {/* Pending Appointments */}
       <Card padding={false}>
         <div className="p-5 border-b border-border flex justify-between items-center">
           <h2 className="text-h4 font-bold text-text-primary">Today & Pending Consultation Requests</h2>
-          <Link href="/doctor/appointments" className="text-caption text-accent hover:underline font-semibold">
-            View Calendar
-          </Link>
+          <Link href="/doctor/appointments" className="text-caption text-accent hover:underline font-semibold">View Calendar</Link>
         </div>
         <div className="divide-y divide-divider">
           {appointments.length === 0 ? (
@@ -73,14 +75,10 @@ export default function DoctorDashboard() {
                 <div className="flex items-center gap-3">
                   <Badge variant={getStatusVariant(app.status)}>{app.status}</Badge>
                   {app.status === 'Pending' && (
-                    <Button size="sm" variant="secondary" onClick={() => updateStatus(app._id || app.id, 'Approved')}>
-                      Approve
-                    </Button>
+                    <Button size="sm" variant="secondary" onClick={() => updateStatus(app._id || app.id, 'Approved')}>Approve</Button>
                   )}
                   {app.status === 'Approved' && (
-                    <Button size="sm" variant="primary" onClick={() => updateStatus(app._id || app.id, 'Completed')}>
-                      Complete
-                    </Button>
+                    <Button size="sm" variant="primary" onClick={() => updateStatus(app._id || app.id, 'Completed')}>Complete</Button>
                   )}
                 </div>
               </div>

@@ -6,22 +6,22 @@ import { useDoctor } from '@/lib/hooks/useDoctor';
 import { useAppointment } from '@/lib/hooks/useAppointment';
 import { useBilling } from '@/lib/hooks/useBilling';
 import { Card, StatCard } from '@/components/common/Card';
+import { PageLoader } from '@/components/common/Loader';
 import { formatCurrency } from '@/lib/utils/formatter';
 import { Users, Stethoscope, Calendar, CreditCard, Activity } from 'lucide-react';
 
 export default function AdminAnalyticsPage() {
-  const { patients } = usePatient();
-  const { doctors } = useDoctor();
-  const { appointments } = useAppointment();
-  const { bills } = useBilling();
+  const { patients, loading: loadingPatients } = usePatient();
+  const { doctors, loading: loadingDoctors } = useDoctor();
+  const { appointments, loading: loadingAppts } = useAppointment();
+  const { bills, loading: loadingBills } = useBilling();
 
-  const totalPaid = bills
-    .filter((b) => b.status === 'Paid')
-    .reduce((sum, b) => sum + (b.grandTotal || 0), 0);
+  const isLoading = loadingPatients || loadingDoctors || loadingAppts || loadingBills;
 
-  const totalUnpaid = bills
-    .filter((b) => b.status === 'Unpaid')
-    .reduce((sum, b) => sum + (b.grandTotal || 0), 0);
+  const totalPaid = bills.filter((b) => b.status === 'Paid').reduce((sum, b) => sum + (b.grandTotal || 0), 0);
+  const totalUnpaid = bills.filter((b) => b.status === 'Unpaid').reduce((sum, b) => sum + (b.grandTotal || 0), 0);
+
+  if (isLoading) return <PageLoader />;
 
   return (
     <div className="flex flex-col gap-8">

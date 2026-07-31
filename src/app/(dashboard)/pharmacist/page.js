@@ -6,16 +6,20 @@ import { usePharmacy } from '@/lib/hooks/usePharmacy';
 import { usePrescription } from '@/lib/hooks/usePrescription';
 import { Card, StatCard } from '@/components/common/Card';
 import { Button } from '@/components/common/Button';
+import { PageLoader } from '@/components/common/Loader';
 import { Package, FileText, Pill, PackagePlus } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { getStatusVariant } from '@/lib/utils/formatter';
 
 export default function PharmacistDashboard() {
-  const { medicines } = usePharmacy();
-  const { prescriptions } = usePrescription();
+  const { medicines, loading: loadingMeds } = usePharmacy();
+  const { prescriptions, loading: loadingRx } = usePrescription();
 
+  const isLoading = loadingMeds || loadingRx;
   const pendingRx = prescriptions.filter((p) => p.status === 'Prescribed');
   const lowStock = medicines.filter((m) => m.stock < 50);
+
+  if (isLoading) return <PageLoader />;
 
   return (
     <div className="flex flex-col gap-8">
@@ -25,14 +29,12 @@ export default function PharmacistDashboard() {
           <h1 className="text-h2 font-bold text-text-primary">Pharmacy Dispensary Portal</h1>
           <p className="text-body-sm text-text-secondary">Medicine stock tracking and prescription fulfillment.</p>
         </div>
-        <div className="flex items-center gap-3">
-          <Link href="/pharmacist/inventory/add">
-            <Button className="flex items-center gap-2">
-              <PackagePlus size={16} />
-              <span>Add Stock Medicine</span>
-            </Button>
-          </Link>
-        </div>
+        <Link href="/pharmacist/inventory/add">
+          <Button className="flex items-center gap-2">
+            <PackagePlus size={16} />
+            <span>Add Stock Medicine</span>
+          </Button>
+        </Link>
       </div>
 
       {/* Stats */}
@@ -43,13 +45,11 @@ export default function PharmacistDashboard() {
         <StatCard label="Total Dispensed" value={prescriptions.filter((p) => p.status === 'Dispensed').length} icon={Pill} />
       </div>
 
-      {/* Prescription Queue Panel */}
+      {/* Prescription Queue */}
       <Card padding={false}>
         <div className="p-5 border-b border-border flex justify-between items-center">
           <h2 className="text-h4 font-bold text-text-primary">Fulfillment Queue</h2>
-          <Link href="/pharmacist/prescriptions" className="text-caption text-accent hover:underline font-semibold">
-            View All Prescriptions
-          </Link>
+          <Link href="/pharmacist/prescriptions" className="text-caption text-accent hover:underline font-semibold">View All Prescriptions</Link>
         </div>
         <div className="divide-y divide-divider">
           {prescriptions.length === 0 ? (
