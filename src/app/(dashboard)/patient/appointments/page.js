@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useAppointment } from '@/lib/hooks/useAppointment';
 import { Table } from '@/components/common/Table';
 import { Button } from '@/components/common/Button';
+import { PageLoader } from '@/components/common/Loader';
 import { Badge } from '@/components/ui/badge';
 import { formatDate, formatCurrency, getStatusVariant } from '@/lib/utils/formatter';
 import { Plus } from 'lucide-react';
@@ -40,11 +41,13 @@ export default function PatientAppointmentsPage() {
         </Link>
       </div>
 
-      <Table
-        columns={columns}
-        data={appointments}
-        emptyMessage="No consultation bookings found. Click Book Consultation to schedule one!"
-      />
+      {loading ? <PageLoader /> : (
+        <Table
+          columns={columns}
+          data={appointments}
+          emptyMessage="No consultation bookings found. Click Book Consultation to schedule one!"
+        />
+      )}
     </div>
   );
 }

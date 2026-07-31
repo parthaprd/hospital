@@ -6,11 +6,12 @@ import { usePharmacy } from '@/lib/hooks/usePharmacy';
 import { useNotification } from '@/context/NotificationContext';
 import { Table } from '@/components/common/Table';
 import { Button } from '@/components/common/Button';
+import { PageLoader } from '@/components/common/Loader';
 import { formatCurrency } from '@/lib/utils/formatter';
 import { PackagePlus } from 'lucide-react';
 
 export default function InventoryPage() {
-  const { medicines, updateStock } = usePharmacy();
+  const { medicines, loading, updateStock } = usePharmacy();
   const { notify } = useNotification();
 
   const handleStockPrompt = async (med) => {
@@ -57,16 +58,18 @@ export default function InventoryPage() {
         </Link>
       </div>
 
-      <Table
-        columns={columns}
-        data={medicines}
-        emptyMessage="No medicines registered in stock repository."
-        actions={(row) => (
-          <Button size="sm" variant="secondary" onClick={() => handleStockPrompt(row)}>
-            Replenish
-          </Button>
-        )}
-      />
+      {loading ? <PageLoader /> : (
+        <Table
+          columns={columns}
+          data={medicines}
+          emptyMessage="No medicines registered in stock repository."
+          actions={(row) => (
+            <Button size="sm" variant="secondary" onClick={() => handleStockPrompt(row)}>
+              Replenish
+            </Button>
+          )}
+        />
+      )}
     </div>
   );
 }

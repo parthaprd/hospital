@@ -5,11 +5,12 @@ import Link from 'next/link';
 import { usePatient } from '@/lib/hooks/usePatient';
 import { Table } from '@/components/common/Table';
 import { Button } from '@/components/common/Button';
+import { PageLoader } from '@/components/common/Loader';
 import { formatDate } from '@/lib/utils/formatter';
 import { UserPlus, Search } from 'lucide-react';
 
 export default function ReceptionistPatientsPage() {
-  const { patients } = usePatient();
+  const { patients, loading } = usePatient();
 
   const columns = [
     { label: 'Name', key: 'name' },
@@ -43,7 +44,9 @@ export default function ReceptionistPatientsPage() {
         </div>
       </div>
 
-      <Table columns={columns} data={patients} emptyMessage="No registered patients in system." />
+      {loading ? <PageLoader /> : (
+        <Table columns={columns} data={patients} emptyMessage="No registered patients in system." />
+      )}
     </div>
   );
 }

@@ -5,11 +5,12 @@ import Link from 'next/link';
 import { useDoctor } from '@/lib/hooks/useDoctor';
 import { Table } from '@/components/common/Table';
 import { Button } from '@/components/common/Button';
+import { PageLoader } from '@/components/common/Loader';
 import { formatCurrency } from '@/lib/utils/formatter';
 import { UserPlus } from 'lucide-react';
 
 export default function AdminDoctorsPage() {
-  const { doctors } = useDoctor();
+  const { doctors, loading } = useDoctor();
 
   const columns = [
     { label: 'Doctor Name', key: 'name' },
@@ -35,7 +36,9 @@ export default function AdminDoctorsPage() {
         </Link>
       </div>
 
-      <Table columns={columns} data={doctors} emptyMessage="No doctor profiles registered." />
+      {loading ? <PageLoader /> : (
+        <Table columns={columns} data={doctors} emptyMessage="No doctor profiles registered." />
+      )}
     </div>
   );
 }

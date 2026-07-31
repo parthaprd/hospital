@@ -3,12 +3,13 @@
 import React, { useState } from 'react';
 import { usePatient } from '@/lib/hooks/usePatient';
 import { Table } from '@/components/common/Table';
+import { PageLoader } from '@/components/common/Loader';
 import { Input } from '@/components/common/Input';
 import { formatDate } from '@/lib/utils/formatter';
 import { Search } from 'lucide-react';
 
 export default function DoctorPatientsPage() {
-  const { patients } = usePatient();
+  const { patients, loading } = usePatient();
   const [query, setQuery] = useState('');
 
   const filtered = patients.filter(
@@ -45,7 +46,9 @@ export default function DoctorPatientsPage() {
         />
       </div>
 
-      <Table columns={columns} data={filtered} emptyMessage="No matching patient records found." />
+      {loading ? <PageLoader /> : (
+        <Table columns={columns} data={filtered} emptyMessage="No matching patient records found." />
+      )}
     </div>
   );
 }

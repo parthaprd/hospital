@@ -5,12 +5,13 @@ import Link from 'next/link';
 import { useLabTest } from '@/lib/hooks/useLabTest';
 import { Table } from '@/components/common/Table';
 import { Button } from '@/components/common/Button';
+import { PageLoader } from '@/components/common/Loader';
 import { Badge } from '@/components/ui/badge';
 import { formatDate, getStatusVariant } from '@/lib/utils/formatter';
 import { Plus } from 'lucide-react';
 
 export default function DoctorLabTestsPage() {
-  const { labTests } = useLabTest();
+  const { labTests, loading } = useLabTest();
 
   const columns = [
     { label: 'Patient Name', key: 'patientId', render: (val, row) => row.patientId?.name || row.patientName || 'John Doe' },
@@ -43,7 +44,9 @@ export default function DoctorLabTestsPage() {
         </Link>
       </div>
 
-      <Table columns={columns} data={labTests} emptyMessage="No lab investigations on record." />
+      {loading ? <PageLoader /> : (
+        <Table columns={columns} data={labTests} emptyMessage="No lab investigations on record." />
+      )}
     </div>
   );
 }

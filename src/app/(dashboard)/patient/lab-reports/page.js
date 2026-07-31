@@ -4,13 +4,14 @@ import React from 'react';
 import { useLabTest } from '@/lib/hooks/useLabTest';
 import { Table } from '@/components/common/Table';
 import { Button } from '@/components/common/Button';
+import { PageLoader } from '@/components/common/Loader';
 import { Badge } from '@/components/ui/badge';
 import { formatDate, getStatusVariant } from '@/lib/utils/formatter';
 import { downloadLabReportPdf } from '@/lib/utils/pdfGenerator';
 import { Download } from 'lucide-react';
 
 export default function PatientLabReportsPage() {
-  const { labTests } = useLabTest();
+  const { labTests, loading } = useLabTest();
 
   const columns = [
     { label: 'Investigation Test', key: 'testName' },
@@ -46,7 +47,9 @@ export default function PatientLabReportsPage() {
         <p className="text-body-sm text-text-secondary">Access findings from ordered laboratory diagnostic screenings.</p>
       </div>
 
-      <Table columns={columns} data={labTests} emptyMessage="No laboratory diagnostic tests requested." />
+      {loading ? <PageLoader /> : (
+        <Table columns={columns} data={labTests} emptyMessage="No laboratory diagnostic tests requested." />
+      )}
     </div>
   );
 }

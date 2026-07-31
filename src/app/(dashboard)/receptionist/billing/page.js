@@ -6,12 +6,13 @@ import { useBilling } from '@/lib/hooks/useBilling';
 import { useNotification } from '@/context/NotificationContext';
 import { Table } from '@/components/common/Table';
 import { Button } from '@/components/common/Button';
+import { PageLoader } from '@/components/common/Loader';
 import { Badge } from '@/components/ui/badge';
 import { formatDate, formatCurrency, getStatusVariant } from '@/lib/utils/formatter';
 import { Receipt } from 'lucide-react';
 
 export default function ReceptionistBillingPage() {
-  const { bills, pay } = useBilling();
+  const { bills, loading, pay } = useBilling();
   const { notify } = useNotification();
 
   const handlePayCash = async (id) => {
@@ -50,18 +51,20 @@ export default function ReceptionistBillingPage() {
         </Link>
       </div>
 
-      <Table
-        columns={columns}
-        data={bills}
-        emptyMessage="No billing ledger entries found."
-        actions={(row) => (
-          row.status === 'Unpaid' && (
-            <Button size="sm" variant="secondary" onClick={() => handlePayCash(row._id || row.id)}>
-              Mark Paid (Cash)
-            </Button>
-          )
-        )}
-      />
+      {loading ? <PageLoader /> : (
+        <Table
+          columns={columns}
+          data={bills}
+          emptyMessage="No billing ledger entries found."
+          actions={(row) => (
+            row.status === 'Unpaid' && (
+              <Button size="sm" variant="secondary" onClick={() => handlePayCash(row._id || row.id)}>
+                Mark Paid (Cash)
+              </Button>
+            )
+          )}
+        />
+      )}
     </div>
   );
 }
