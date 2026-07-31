@@ -8,10 +8,10 @@
   --color-bg-secondary: #F0F0F0;
   --color-border: #E5E7EB;
   --color-divider: #E5E7EB;
-  --color-bias-left: #B42318;
+  --color-bias-left: #F43F5E;
   --color-bias-center: #E5E7EB;
-  --color-bias-right: #1D4ED8;
-  --color-accent: #1D4ED8;
+  --color-bias-right: #16A34A;
+  --color-accent: #16A34A;
 
   /* Typography */
   --font-sans: var(--font-poppins), system-ui, -apple-system, BlinkMacSystemFont, sans-serif;

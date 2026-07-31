@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { PageLoader } from '@/components/common/Loader';
+import { PageLoader, FullscreenLoader } from '@/components/common/Loader';
 import { canAccess, getDashboardRoute } from '@/lib/utils/permissions';
 
 export const ProtectedRoute = ({ children, allowedRoles }) => {
@@ -24,7 +24,7 @@ export const ProtectedRoute = ({ children, allowedRoles }) => {
     }
   }, [user, loading, allowedRoles, pathname, router]);
 
-  if (loading) return <PageLoader />;
+  if (loading) return <FullscreenLoader text="Verifying session…" />;
   if (!user) return null;
   if (allowedRoles && !allowedRoles.includes(user.role)) return null;
 
